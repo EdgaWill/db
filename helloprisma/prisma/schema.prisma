@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model relProdInver {
+  tablaProducto        tablaProducto      @relation(fields: [tablaProductoId], references: [id])
+  tablaProductoId      Int
+  tablaInversionista   tablaInversionista @relation(fields: [tablaInversionistaId], references: [id])
+  tablaInversionistaId String
+}
+
+model tablaInversionista {
+  id                   String             @id @default(cuid())
+  nombres              String
+  apPat                String
+  apMat                String
+  tipoIdentificacion   tipoIdentificacion @relation(fields: [tipoIdentificacionId], references: [id])
+  nroIdentificacion    String
+  pEP                  Boolean
+  tipoIdentificacionId Int
+  relProdInver         relProdInver[]
+  tablaDocumento       tablaDocumento[]
+}
+
+model tipoIdentificacion {
+  id                 Int                  @id @default(autoincrement())
+  descripcion        String
+  tablaInversionista tablaInversionista[]
+}
+
+model tablaProducto {
+  id             Int              @id @default(autoincrement())
+  codProducto    String
+  nombreProducto String
+  relProdInver   relProdInver[]
+  tablaDocumento tablaDocumento[]
+}
+
+model tablaDocumento {
+  id                   Int                @id @default(autoincrement())
+  nombreFile           String
+  userSubida           String
+  userActualiza        String
+  userDelete           String
+  fechaSubida          DateTime
+  fechaActualiza       DateTime
+  fechaDelete          DateTime
+  uuidAws              String
+  codAwsUrl            String
+  tablaCategoria       tablaCategoria     @relation(fields: [tablaCategoriaId], references: [id])
+  tablaCategoriaId     Int
+  tablaProducto        tablaProducto      @relation(fields: [tablaProductoId], references: [id])
+  tablaProductoId      Int
+  tablaInversionista   tablaInversionista @relation(fields: [tablaInversionistaId], references: [id])
+  tablaInversionistaId String
+  tipoDocumento        tipoDocumento      @relation(fields: [tipoDocumentoId], references: [id])
+  tipoDocumentoId      Int
+  tablaDescarga        tablaDescarga[]
+}
+
+model tablaCategoria {
+  id             Int              @id @default(autoincrement())
+  descripcion    String
+  tablaDocumento tablaDocumento[]
+}
+
+model tipoDocumento {
+  id             Int              @id @default(autoincrement())
+  nombre         String
+  descripcion    String
+  tablaDocumento tablaDocumento[]
+}
+
+model tablaDescarga {
+  id               Int            @id @default(autoincrement())
+  tablaUsuarios    tablaUsuarios  @relation(fields: [tablaUsuariosId], references: [id])
+  tablaUsuariosId  Int
+  tablaDocumento   tablaDocumento @relation(fields: [tablaDocumentoId], references: [id])
+  tablaDocumentoId Int
+  fecha_download DateTime
+}
+
+model tablaUsuarios {
+  id               Int             @id @default(autoincrement())
+  tablaRol         tablaRol        @relation(fields: [tablaRolId], references: [id])
+  tablaRolId       Int
+  userNombre       String
+  email            String
+  contrasena       String
+  activo_desactivo Boolean
+  tablaDescarga    tablaDescarga[]
+}
+
+model tablaRol {
+  id            Int             @id @default(autoincrement())
+  rolNombre     String
+  rolPermiso    String
+  tablaUsuarios tablaUsuarios[]
+}
+
+//model relProdCate{
+  
+//}
+
+//model relProdCateInver{
+
+//}
